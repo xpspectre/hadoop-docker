@@ -1,6 +1,4 @@
-# Apache Hadoop/YARN single node install
-#   Based on https://github.com/sticksnleaves/docker-hadoop-single-node
-#   Based on http://www.alexjf.net/blog/distributed-systems/hadoop-yarn-installation-definitive-guide/
+# Apache Hadoop/YARN
 
 FROM ubuntu:14.04
 MAINTAINER Kevin Shi
@@ -57,7 +55,7 @@ ADD config/start-hadoop-all.sh $HADOOP_PREFIX/bin/start-hadoop-all.sh
 RUN chmod +x $HADOOP_PREFIX/bin/start-hadoop-all.sh
 
 # Expose ports
-EXPOSE 50070 50470 9000 50075 50475 50010 50020 50090 8088 8032 50060
+EXPOSE 50070 50470 9000 50075 50475 50010 50020 50090 8088 8032 50060 22
 
 # Start Hadoop on container startup
 CMD ["/bin/bash", "start-hadoop-all.sh"]
