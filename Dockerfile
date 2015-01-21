@@ -18,13 +18,6 @@ RUN addgroup hadoop
 ENV HDUSER_HOME /home/hduser
 RUN useradd -m -d $HDUSER_HOME -s /bin/bash -G hadoop hduser
 
-# Set up SSH
-RUN mkdir -p $HDUSER_HOME/.ssh
-ADD secret/id_rsa $HDUSER_HOME/.ssh/id_rsa
-ADD secret/id_rsa.pub $HDUSER_HOME/.ssh/id_rsa.pub
-ADD config/ssh_config $HDUSER_HOME/.ssh/ssh_config
-RUN cat $HDUSER_HOME/.ssh/id_rsa.pub >> $HDUSER_HOME/.ssh/authorized_keys
-
 # Install Hadoop
 ADD packages/hadoop-2.6.0.tar.gz /usr/local/
 
@@ -42,6 +35,13 @@ ENV PATH $PATH:$HADOOP_PREFIX/sbin
 # Configure Hadoop
 ADD config/core-site.xml $HADOOP_PREFIX/etc/hadoop/core-site.xml
 ADD config/hdfs-site.xml $HADOOP_PREFIX/etc/hadoop/hdfs-site.xml
+
+# Set up SSH
+RUN mkdir -p $HDUSER_HOME/.ssh
+ADD secret/id_rsa $HDUSER_HOME/.ssh/id_rsa
+ADD secret/id_rsa.pub $HDUSER_HOME/.ssh/id_rsa.pub
+ADD config/ssh_config $HDUSER_HOME/.ssh/ssh_config
+RUN cat $HDUSER_HOME/.ssh/id_rsa.pub >> $HDUSER_HOME/.ssh/authorized_keys
 
 # Fix permissions
 RUN chown -R hduser:hadoop $HDUSER_HOME

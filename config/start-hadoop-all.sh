@@ -18,7 +18,7 @@ then
   fi
 
   # Set YARN resource manager on slave nodes
-  if [ $2 == 'slave' ]
+  if [ $1 == 'slave' ]
   then
       cat <<EOF >  $HADOOP_PREFIX/etc/hadoop/yarn-site.xml
 <?xml version="1.0" encoding="UTF-8"?>
