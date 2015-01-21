@@ -13,7 +13,7 @@ then
   if [ $1 == 'master' ]
   then
     echo "2 args input. Running in master mode this address $2"
-  elif [ $2 == 'slave' ]
+  elif [ $1 == 'slave' ]
   then
     echo "2 args input. Running in slave mode with master address $2"
   else
