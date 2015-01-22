@@ -1,43 +1,58 @@
 #!/bin/bash
 # Main start/entry script
 #   Takes 0 or 2 args
-#   No error handling on this script - should be done in calling script.
+#   Sets up Hadoop processes according to hardware of node
+# Note: No error handling on this script - should be done in calling script.
 
-## Update config files for master/slave mode
+################################################################################
+# Configure node compute capabilities                                          #
+################################################################################
+# Get node resources
+MEM=$(expr `cat /proc/meminfo | grep MemTotal | awk '{print $2}'` / 1024)
+CORES=`nproc`
+echo 'Node has' $MEM 'MB RAM.'
+echo 'Node has' $CORES 'cores.'
+
+# Configure node maxes
+export MAXMEM=$(expr $MEM - 2048)
+if [ $MAXMEM < 0 ]
+then
+  echo 'Warning: node has < 2GB RAM. Limiting resources.'
+  export MAXMEM=256
+fi
+export MAXCORES=$CORES
+
+################################################################################
+# Configure master/slave communication                                         #
+################################################################################
+# Note: Uses a single "master" NameNode and ResourceManager
+export NAMENODE=localhost
 if [ $# == 2 ]
 then
-  echo "Setting $1 mode with master $2."
+  export NAMENODE=$2
+fi
+echo 'NameNode and ResourceManager URI set to ' $NAMENODE
 
-  # Set cluster manager on master/slave nodes
-  sed -i "s/localhost/$2/" $HADOOP_PREFIX/etc/hadoop/core-site.xml
-
-  # Set master /etc/hosts to recognize self
-  if [ $1 == 'master' ]
-  then
-    echo "127.0.0.1 $2" >> /etc/hosts
-  fi
-
-  # Set YARN resource manager on slave nodes
-  # TODO: cleanup this section to make configs easier
-  if [ $1 == 'slave' ]
-  then
-      cat <<EOF >  $HADOOP_PREFIX/etc/hadoop/yarn-site.xml
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-
-<configuration>
-    <property>
-        <name>yarn.resourcemanager.hostname</name>
-        <value>$2</value>
-        <description>The hostname of the RM.</description>
-    </property>
-</configuration>
-EOF
-  fi
+# Hack: set master /etc/hosts to recognize self
+if [[ $# == 2 && $1 == 'master' ]]
+then
+  echo "127.0.0.1 $2" >> /etc/hosts
 fi
 
-## Startup scripts
-#   Allow master node to serve as additional datanode for now
+################################################################################
+# Fill in template files with configs set above                                #
+################################################################################
+perl -p -i -e 's/\$\{([^}]+)\}/defined $ENV{$1} ? $ENV{$1} : $&/eg' < $HADOOP_PREFIX/etc/hadoop/core-site.xml.template > $HADOOP_PREFIX/etc/hadoop/core-site.xml
+perl -p -i -e 's/\$\{([^}]+)\}/defined $ENV{$1} ? $ENV{$1} : $&/eg' < $HADOOP_PREFIX/etc/hadoop/hdfs-site.xml.template > $HADOOP_PREFIX/etc/hadoop/hdfs-site.xml
+perl -p -i -e 's/\$\{([^}]+)\}/defined $ENV{$1} ? $ENV{$1} : $&/eg' < $HADOOP_PREFIX/etc/hadoop/yarn-site.xml.template > $HADOOP_PREFIX/etc/hadoop/yarn-site.xml
+
+################################################################################
+# Start Hadoop services                                                        #
+################################################################################
+# Note: Allow master node to serve as additional datanode for now
+
+# Format hdfs system before 1st use - this behaves ephemerally with the container
+su hduser -c "$HADOOP_PREFIX/bin/hdfs namenode -format"
 
 # Start single-node/master specific processes
 if [[ $# == 0 || $1 == 'master' ]]
