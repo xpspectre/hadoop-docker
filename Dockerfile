@@ -55,7 +55,7 @@ ADD config/start-hadoop-all.sh $HADOOP_PREFIX/bin/start-hadoop-all.sh
 RUN chmod +x $HADOOP_PREFIX/bin/start-hadoop-all.sh
 
 # Expose ports
-EXPOSE 50070 50470 9000 50075 50475 50010 50020 50090 8088 8032 8020 50060 22
+EXPOSE 50090 50075 50070 50060 50475 50470 50020 50010 9000 8088 8033 8032 8031 8030 8020 22
 
 # Start Hadoop on container startup
 CMD ["/bin/bash", "start-hadoop-all.sh"]
