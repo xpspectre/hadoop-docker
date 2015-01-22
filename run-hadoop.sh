@@ -46,7 +46,7 @@ else
 fi
 
 # Build Docker image
-docker build -t hadoop-single .
+docker build -t hadoop .
 
 # Start hadoop container
 #   Just expost all the ports; run this 1/node
@@ -55,10 +55,10 @@ docker build -t hadoop-single .
 if [ $# == 0 ]
 then
   echo "Starting container in single-node mode."
-  docker run -t -i -p 50090:50090 -p 50075:50075 -p 50070:50070 -p 50060:50060 -p 50475:50475 -p 50470:50470 -p 50020:50020 -p 50010:50010 -p 9000:9000 -p 8088:8088 -p 8033:8033 -p 8032:8032 -p 8031:8031 -p 8030:8030 -p 8020:8020 -p 2222:22 hadoop-single
+  docker run -t -i -p 50090:50090 -p 50075:50075 -p 50070:50070 -p 50060:50060 -p 50475:50475 -p 50470:50470 -p 50020:50020 -p 50010:50010 -p 9000:9000 -p 8088:8088 -p 8033:8033 -p 8032:8032 -p 8031:8031 -p 8030:8030 -p 8020:8020 -p 2222:22 hadoop
 else
   echo "Starting container in $1 mode."
-  docker run -t -i -p 50090:50090 -p 50075:50075 -p 50070:50070 -p 50060:50060 -p 50475:50475 -p 50470:50470 -p 50020:50020 -p 50010:50010 -p 9000:9000 -p 8088:8088 -p 8033:8033 -p 8032:8032 -p 8031:8031 -p 8030:8030 -p 8020:8020 -p 2222:22 hadoop-single start-hadoop-all.sh $1 $2
+  docker run -t -i -p 50090:50090 -p 50075:50075 -p 50070:50070 -p 50060:50060 -p 50475:50475 -p 50470:50470 -p 50020:50020 -p 50010:50010 -p 9000:9000 -p 8088:8088 -p 8033:8033 -p 8032:8032 -p 8031:8031 -p 8030:8030 -p 8020:8020 -p 2222:22 hadoop start-hadoop-all.sh $1 $2
 fi
 
 
