@@ -8,6 +8,12 @@
         <value>${NAMENODE}</value>
         <description>The hostname of the RM.</description>
     </property>
+    
+    <property>
+        <name>yarn.resourcemanager.bind-host</name>
+        <value>0.0.0.0</value>
+        <description>The address the RM binds to. Needed for RM to bind all interfaces.</description>
+    </property>
 
     <property>
         <name>yarn.scheduler.minimum-allocation-mb</name>
